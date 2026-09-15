@@ -31,6 +31,7 @@ docker run -d --name "$CONTAINER" --restart unless-stopped \
   --label "traefik.http.routers.avocix.rule=Host(\`$DOMAIN\`)" \
   --label traefik.http.routers.avocix.entrypoints=websecure \
   --label traefik.http.routers.avocix.tls=true \
+  --label traefik.http.routers.avocix.tls.certresolver=le \
   --label traefik.http.services.avocix.loadbalancer.server.port=80 \
   "$IMAGE"
 sleep 6
