@@ -1,0 +1,22 @@
+{
+  "_comment": "NOGA 2008 (2 chiffres) ciblés pour alltodo : artisans, services à domicile, commerces de proximité. Affiner avec NOGA 2025 côté UI.",
+  "targets": [
+    { "code": "43", "label": "Travaux de construction spécialisés (plombiers, électriciens, menuisiers, peintres)" },
+    { "code": "81", "label": "Services relatifs aux bâtiments, nettoyage, débarras, paysagistes" },
+    { "code": "96", "label": "Autres services personnels (pressing, coiffure, aide à domicile)" },
+    { "code": "47", "label": "Commerce de détail (épiceries, boulangeries, fleuristes, boutiques)" },
+    { "code": "95", "label": "Réparation d'ordinateurs, téléphones, électroménager" },
+    { "code": "62", "label": "Programmation, conseil informatique (prestataires tech alltodo)" },
+    { "code": "69", "label": "Activités juridiques et comptables (partenaires pro)" },
+    { "code": "49", "label": "Transports, déménagement, livraison" }
+  ],
+  "cantons_priority": ["VD", "GE", "FR", "NE", "VS", "JU"],
+  "legal_forms_priority": ["Sàrl", "SA", "Raison individuelle"],
+  "signals": [
+    "creation_lt_14j",
+    "nouveau_dirigeant",
+    "changement_adresse",
+    "augmentation_capital",
+    "nouvelle_succursale"
+  ]
+}
