@@ -1,4 +1,5 @@
 .git/
-data/
+# ignore le dossier data/ racine (sources CSV) mais PAS web/data/ (JSON embarqué)
+/data/
 __pycache__/
 .env
