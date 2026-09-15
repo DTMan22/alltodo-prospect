@@ -8,161 +8,252 @@
 <style>
 *{box-sizing:border-box;margin:0}
 :root{
-  --brand:#0d9488;--brand-d:#0f766e;--bg:#f1f5f9;--card:#fff;--txt:#0f172a;--mut:#64748b;
-  --line:#e2e8f0;--chip:#e6fffa;--radius:1rem;
-  --shadow:0 1px 2px rgba(15,23,42,.06),0 4px 16px rgba(15,23,42,.07);
+  --brand:#0d9488;--brand-d:#0f766e;--bg:#eef2f5;--card:#fff;--txt:#0f172a;--mut:#64748b;
+  --line:#e2e8f0;--chip:#ccfbf1;--radius:1.1rem;
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 6px 20px rgba(15,23,42,.08);
+  --nav-h:calc(64px + env(safe-area-inset-bottom));
 }
 @media(prefers-color-scheme:dark){
-  :root{--bg:#0b1220;--card:#111c30;--txt:#e2e8f0;--mut:#94a3b8;--line:#1e293b;
-    --chip:#134e4a;--shadow:0 4px 18px rgba(0,0,0,.35)}
+  :root{--bg:#0a1120;--card:#121d33;--txt:#e6edf7;--mut:#94a3b8;--line:#1f2c47;
+    --chip:#134e4a;--shadow:0 6px 22px rgba(0,0,0,.4)}
 }
 body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
-.hero{background:linear-gradient(135deg,#0d9488,#115e59 60%,#134e4a);color:#fff;
-  padding:calc(1.4rem + env(safe-area-inset-top)) 1.2rem 1.6rem;position:sticky;top:0;z-index:10;
-  border-radius:0 0 1.4rem 1.4rem;box-shadow:var(--shadow)}
-.hero h1{font-size:1.25rem;font-weight:800;letter-spacing:-.01em}
-.hero h1 span{opacity:.75;font-weight:400;font-size:.85rem}
-.hero p{font-size:.8rem;opacity:.85;margin:.3rem 0 .9rem}
-.search{display:flex;gap:.5rem;background:rgba(255,255,255,.95);border-radius:99px;padding:.35rem .35rem .35rem 1rem;box-shadow:var(--shadow)}
-.search input{flex:1;min-width:0;border:0;outline:0;font-size:1rem;background:transparent;color:#0f172a}
-.search button{border:0;border-radius:99px;background:var(--brand-d);color:#fff;font-weight:700;
-  padding:.7rem 1.2rem;font-size:.9rem;min-height:44px;cursor:pointer}
-.chips{display:flex;gap:.45rem;overflow-x:auto;padding:.7rem 1.2rem .1rem;scrollbar-width:none}
+.top{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#0d9488,#115e59);
+  color:#fff;padding:calc(.9rem + env(safe-area-inset-top)) 1.1rem .9rem}
+.top .row{display:flex;align-items:center;gap:.6rem}
+.logo{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.18);
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800}
+.top h1{font-size:1.05rem;font-weight:800}
+.top small{display:block;font-size:.72rem;opacity:.85;font-weight:400}
+.searchbar{margin:.8rem 0 .2rem;display:flex;gap:.5rem;background:#fff;border-radius:99px;
+  padding:.3rem .3rem .3rem 1rem;box-shadow:var(--shadow)}
+.searchbar input{flex:1;min-width:0;border:0;outline:0;font-size:1rem;background:transparent;color:#0f172a}
+.searchbar button{border:0;border-radius:99px;background:var(--brand-d);color:#fff;font-weight:700;
+  padding:.7rem 1.3rem;font-size:.9rem;min-height:44px;cursor:pointer}
+.view{display:none;padding:.8rem 1.1rem calc(var(--nav-h) + 1.5rem);max-width:1100px;margin:0 auto}
+.view.on{display:block}
+.chips{display:flex;gap:.45rem;overflow-x:auto;padding:.2rem 0 .6rem;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
-.chip{flex:0 0 auto;font-size:.78rem;font-weight:600;border:1px solid var(--line);background:var(--card);
-  color:var(--txt);border-radius:99px;padding:.5rem .9rem;min-height:40px;cursor:pointer}
+.chip{flex:0 0 auto;font-size:.76rem;font-weight:700;border:1px solid var(--line);background:var(--card);
+  color:var(--txt);border-radius:99px;padding:.5rem .85rem;min-height:38px;cursor:pointer}
 .chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
-#status{font-size:.8rem;color:var(--mut);padding:.7rem 1.2rem 0;max-width:1100px;margin:0 auto}
-main{padding:.7rem 1.2rem calc(2.5rem + env(safe-area-inset-bottom));max-width:1100px;margin:0 auto}
-.grid{display:grid;gap:.8rem;grid-template-columns:1fr}
-.card{background:var(--card);border-radius:var(--radius);padding:1rem 1rem .9rem;box-shadow:var(--shadow);
-  border:1px solid var(--line)}
-.card h2{font-size:1.02rem;font-weight:700;letter-spacing:-.01em}
-.tags{margin:.45rem 0 .1rem}
-.tag{display:inline-block;font-size:.7rem;font-weight:600;border-radius:99px;padding:.2rem .6rem;margin:0 .3rem .3rem 0}
-.tag.b{background:var(--chip);color:var(--brand-d)}
-@media(prefers-color-scheme:dark){.tag.b{color:#5eead4}}
-.tag.g{background:var(--bg);color:var(--mut);border:1px solid var(--line)}
-.loc{font-size:.84rem;color:var(--mut);margin:.15rem 0 .2rem}
-.actions{display:flex;gap:.5rem;margin-top:.7rem}
-.actions a{flex:1;text-align:center;text-decoration:none;font-size:.9rem;font-weight:700;padding:.7rem .4rem;
-  border-radius:.75rem;min-height:46px;display:flex;align-items:center;justify-content:center;gap:.3rem}
-.call{background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;box-shadow:0 2px 8px rgba(13,148,136,.35)}
-.mail{background:var(--bg);color:var(--txt);border:1px solid var(--line)}
-.nocontact{font-size:.8rem;color:var(--mut);margin-top:.6rem}
-.weblinks{display:flex;gap:.5rem;margin-top:.5rem}
-.weblinks a{flex:1;text-align:center;text-decoration:none;font-size:.78rem;font-weight:600;padding:.6rem .3rem;
-  border-radius:.75rem;min-height:44px;display:flex;align-items:center;justify-content:center;
-  color:var(--brand-d);border:1px dashed var(--brand)}
-@media(prefers-color-scheme:dark){.weblinks a{color:#5eead4}}
+#status{font-size:.78rem;color:var(--mut);margin-bottom:.6rem}
+.grid{display:grid;gap:.7rem;grid-template-columns:1fr}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:.95rem;box-shadow:var(--shadow);cursor:pointer;display:flex;gap:.7rem;align-items:center}
+.avatar{flex:0 0 46px;width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--brand),#115e59);
+  color:#fff;font-weight:800;font-size:1.05rem;display:flex;align-items:center;justify-content:center}
+.card .info{flex:1;min-width:0}
+.card h2{font-size:.95rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .sub{font-size:.76rem;color:var(--mut);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chev{color:var(--mut);font-size:1.1rem}
+.stars{color:#f59e0b}
+.tiles{display:grid;gap:.7rem;grid-template-columns:repeat(3,1fr)}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1rem .5rem;text-align:center;box-shadow:var(--shadow);cursor:pointer}
+.tile b{font-size:1.25rem;display:block;color:var(--brand-d)}
+@media(prefers-color-scheme:dark){.tile b{color:#5eead4}}
+.tile span{font-size:.72rem;color:var(--mut);display:block;margin-top:.15rem}
+.tile small{font-size:.68rem;color:var(--mut)}
 .empty{text-align:center;color:var(--mut);padding:3rem 1rem;font-size:.9rem}
-.empty .big{font-size:2.2rem;display:block;margin-bottom:.5rem}
-footer{text-align:center;font-size:.72rem;color:var(--mut);padding:0 1rem 2rem}
-footer input{margin-top:.4rem}
-@media(min-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:1.5rem}}
+.empty .big{font-size:2.4rem;display:block;margin-bottom:.5rem}
+/* bottom nav */
+nav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:var(--card);border-top:1px solid var(--line);
+  display:flex;padding:.4rem .6rem calc(.4rem + env(safe-area-inset-bottom))}
+nav button{flex:1;border:0;background:none;color:var(--mut);font-size:.68rem;font-weight:700;cursor:pointer;
+  padding:.5rem;min-height:56px;border-radius:.8rem}
+nav button .ic{font-size:1.3rem;display:block}
+nav button.on{color:var(--brand-d)}
+@media(prefers-color-scheme:dark){nav button.on{color:#5eead4}}
+/* detail sheet */
+#sheet{position:fixed;inset:0;z-index:40;display:none}
+#sheet.on{display:block}
+#sheet .bg{position:absolute;inset:0;background:rgba(2,6,17,.55)}
+#sheet .panel{position:absolute;left:0;right:0;bottom:0;max-width:700px;margin:0 auto;background:var(--card);
+  border-radius:1.4rem 1.4rem 0 0;padding:1rem 1.2rem calc(1.4rem + env(safe-area-inset-bottom));
+  max-height:88vh;overflow-y:auto}
+#sheet .grab{width:44px;height:5px;border-radius:99px;background:var(--line);margin:0 auto .8rem}
+.kv{display:flex;justify-content:space-between;gap:1rem;padding:.55rem 0;border-bottom:1px solid var(--line);font-size:.86rem}
+.kv b{color:var(--mut);font-weight:600}
+.kv span{text-align:right;word-break:break-word}
+.kv a{color:var(--brand-d)}
+.bigbtns{display:flex;gap:.5rem;margin-top:.9rem}
+.bigbtns a{flex:1;text-align:center;text-decoration:none;font-weight:800;font-size:.95rem;padding:.85rem;
+  border-radius:.9rem;min-height:50px;display:flex;align-items:center;justify-content:center}
+.call{background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff}
+.mail{background:var(--bg);color:var(--txt);border:1px solid var(--line)}
+.ghost{display:block;text-align:center;margin-top:.5rem;font-size:.82rem;font-weight:600;
+  padding:.7rem;border-radius:.9rem;border:1px dashed var(--brand);color:var(--brand-d);text-decoration:none}
+@media(prefers-color-scheme:dark){.ghost{color:#5eead4}.kv a{color:#5eead4}}
+.favbtn{border:1px solid var(--line);background:var(--card);border-radius:99px;font-size:1rem;
+  width:44px;height:44px;cursor:pointer;color:var(--mut)}
+.favbtn.on{color:#f59e0b;border-color:#f59e0b}
+.desc{font-size:.84rem;color:var(--mut);margin-top:.5rem;line-height:1.45}
+@media(min-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.tiles{grid-template-columns:repeat(6,1fr)}}
 @media(min-width:1050px){.grid{grid-template-columns:repeat(3,1fr)}}
+footer{text-align:center;font-size:.7rem;color:var(--mut);padding:0 1rem calc(var(--nav-h) + .5rem)}
 </style>
 </head>
 <body>
-<header class="hero">
-  <h1>alltodo-prospect <span>· Suisse</span></h1>
-  <p id="baseline">Chargement…</p>
-  <div class="search">
-    <input id="q" type="search" placeholder="Nom, métier, commune…" autocomplete="off" aria-label="Rechercher">
+<header class="top">
+  <div class="row">
+    <div class="logo">a</div>
+    <h1>alltodo-prospect<small id="baseline">Chargement…</small></h1>
+  </div>
+  <div class="searchbar">
+    <input id="q" type="search" placeholder="Nom, métier, commune, VD…" autocomplete="off" aria-label="Rechercher">
     <button id="go" type="button">OK</button>
   </div>
 </header>
-<div class="chips" id="chips"></div>
-<p id="status"></p>
-<main><div class="grid" id="grid"></div></main>
-<footer>Charger un autre JSON : <input type="file" id="f" accept=".json"></footer>
+
+<section class="view on" id="v-search">
+  <div class="chips" id="chips"></div>
+  <p id="status"></p>
+  <div class="grid" id="grid"></div>
+</section>
+
+<section class="view" id="v-cantons">
+  <p id="statusC" style="font-size:.78rem;color:var(--mut);margin-bottom:.6rem"></p>
+  <div class="tiles" id="tiles"></div>
+</section>
+
+<section class="view" id="v-fav">
+  <p style="font-size:.78rem;color:var(--mut);margin-bottom:.6rem">Retrouvez ici vos entreprises épinglées (conservées sur cet appareil).</p>
+  <div class="grid" id="favgrid"></div>
+</section>
+
+<div id="sheet"><div class="bg" id="sheetbg"></div><div class="panel" id="panel"></div></div>
+
+<nav>
+  <button data-v="v-search" class="on"><span class="ic">🔍</span>Recherche</button>
+  <button data-v="v-cantons"><span class="ic">🗺️</span>Cantons</button>
+  <button data-v="v-fav"><span class="ic">⭐</span>Favoris <span id="favcount"></span></button>
+</nav>
+
+<footer style="display:none">Charger un JSON : <input type="file" id="f" accept=".json"></footer>
+
 <script>
-let rows=[], apiMode=false, total=0, activeSrc='';
+let rows=[], apiMode=false, total=0, activeSrc='', lastResults=[], cantons=[];
+let favs={}; try{favs=JSON.parse(localStorage.getItem('atp_fav')||'{}');}catch(e){favs={};}
 const grid=document.getElementById('grid'),st=document.getElementById('status'),
       base=document.getElementById('baseline'),q=document.getElementById('q'),
       chips=document.getElementById('chips');
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function telLink(t){const c=String(t||'').split(';')[0].trim().replace(/[\s.]/g,'');return c?'<a class="call" href="tel:'+esc(c)+'">✆ Appeler</a>':'';}
-function mailLink(m){const e=String(m||'').split(';')[0].trim();return e?'<a class="mail" href="mailto:'+esc(e)+'">✉ Email</a>':'';}
-function cards(list){
-  if(!list.length)return '<div class="empty"><span class="big">🔍</span>Aucun résultat — essayez un autre mot-clé.</div>';
-  return list.map(r=>{
-    const metier=r.noga_label||r.noga||r.category||r.forme||'Entreprise';
-    const btns=telLink(r.telephone)+mailLink(r.email);
-    const qenc=encodeURIComponent(((r.raison_sociale||'')+' '+(r.commune||'')).trim());
-    const meta=[];
-    if(r.canton)meta.push('<span class="tag b">'+esc(r.canton)+'</span>');
-    meta.push('<span class="tag b">'+esc(metier)+'</span>');
-    meta.push('<span class="tag g">📍 '+esc(r.commune||'?')+'</span>');
-    if(r.uid_che)meta.push('<span class="tag g">'+esc(r.uid_che)+'</span>');
-    const desc=r.description?'<div class="loc">'+esc(r.description.slice(0,220))+(r.description.length>220?'…':'')+'</div>':'';
-    const site=r.site_web?'<div class="loc">🌐 <a target="_blank" rel="noopener" href="'+esc(/^https?:/.test(r.site_web)?r.site_web:'https://'+r.site_web)+'">'+esc(r.site_web.replace(/^https?:\/\//,''))+'</a></div>':'';
-    const web=r.raison_sociale?'<div class="weblinks">'+
-      '<a target="_blank" rel="noopener" href="https://www.google.com/search?q='+qenc+'">🌐 Internet</a>'+
-      '<a target="_blank" rel="noopener" href="https://www.google.com/search?q=site:linkedin.com/company+'+qenc+'">in LinkedIn</a></div>':'';
-    return '<article class="card"><h2>'+esc(r.raison_sociale||'(sans nom)')+'</h2>'+
-    '<div class="tags">'+meta.join('')+'</div>'+
-    (r.adresse?'<div class="loc">'+esc(r.adresse)+'</div>':'')+desc+site+
-    (btns?'<div class="actions">'+btns+'</div>':'<div class="nocontact">Pas de contact direct — utilisez les liens ci-dessous.</div>')+
-    web+'</article>';}).join('');
+function initials(n){return (String(n||'?').trim()[0]||'?').toUpperCase();}
+function saveFavs(){try{localStorage.setItem('atp_fav',JSON.stringify(favs));}catch(e){}
+  document.getElementById('favcount').textContent=Object.keys(favs).length||'';}
+function toggleFav(uid){const r=lastResults.find(x=>(x.uid||x.raison_sociale)===uid);
+  if(favs[uid])delete favs[uid];else if(r)favs[uid]=r;
+  saveFavs();renderFav();if(document.getElementById('sheet').classList.contains('on'))openDetail(lastResults.indexOf(r),true);}
+function cardHTML(r,i){
+  const star=favs[r.uid]?'★':'☆';
+  return '<article class="card" data-i="'+i+'"><div class="avatar">'+esc(initials(r.raison_sociale))+'</div>'+
+  '<div class="info"><h2>'+esc(r.raison_sociale||'(sans nom)')+'</h2>'+
+  '<div class="sub">'+esc([r.canton,r.commune].filter(Boolean).join(' · ')||'Suisse')+' <span class="stars">'+star+'</span></div></div>'+
+  '<div class="chev">›</div></article>';
 }
-function emptyState(){
-  grid.innerHTML='<div class="empty"><span class="big">🏔️</span>Tapez au moins <b>2 lettres</b> pour explorer les entreprises suisses.</div>';
-  st.textContent='';
+function paintCards(list){
+  lastResults=list;
+  grid.innerHTML=list.length?list.map(cardHTML).join(''):
+    '<div class="empty"><span class="big">🔍</span>Aucun résultat.</div>';
+  grid.querySelectorAll('.card').forEach(c=>c.onclick=()=>openDetail(+c.dataset.i));
+}
+function openDetail(i,keep){
+  const r=lastResults[i];
+  if(!r)return;
+  const uid=r.uid||r.raison_sociale;
+  const tel=(r.telephone||'').split(';')[0].trim(), mail=(r.email||'').split(';')[0].trim();
+  const qenc=encodeURIComponent(((r.raison_sociale||'')+' '+(r.commune||'')).trim());
+  const site=r.site_web?('https://'+String(r.site_web).replace(/^https?:\/\//,'')):'';
+  document.getElementById('panel').innerHTML=
+    '<div class="grab"></div>'+
+    '<div style="display:flex;gap:.6rem;align-items:center"><h2 style="flex:1;font-size:1.1rem">'+esc(r.raison_sociale||'(sans nom)')+'</h2>'+
+    '<button class="favbtn'+(favs[uid]?' on':'')+'" id="favb">'+(favs[uid]?'★':'☆')+'</button></div>'+
+    '<div class="kv"><b>Canton</b><span>'+esc(r.canton||'—')+'</span></div>'+
+    '<div class="kv"><b>Commune</b><span>'+esc(r.commune||'—')+'</span></div>'+
+    (r.adresse?'<div class="kv"><b>Adresse</b><span>'+esc(r.adresse)+'</span></div>':'')+
+    (r.uid_che?'<div class="kv"><b>UID</b><span>'+esc(r.uid_che)+'</span></div>':'')+
+    (r.forme?'<div class="kv"><b>Forme</b><span>'+esc(r.forme)+'</span></div>':'')+
+    (site?'<div class="kv"><b>Site</b><span><a target="_blank" rel="noopener" href="'+esc(site)+'">'+esc(String(r.site_web).replace(/^https?:\/\//,''))+'</a></span></div>':'')+
+    (r.telephone?'<div class="kv"><b>Tél</b><span><a href="tel:'+esc(tel.replace(/[\s.]/g,''))+'">'+esc(r.telephone)+'</a></span></div>':'')+
+    (r.email?'<div class="kv"><b>Email</b><span><a href="mailto:'+esc(mail)+'">'+esc(mail)+'</a></span></div>':'')+
+    (r.description?'<p class="desc">'+esc(r.description)+'</p>':'')+
+    '<div class="bigbtns">'+(tel?'<a class="call" href="tel:'+esc(tel.replace(/[\s.]/g,''))+'">✆ Appeler</a>':'')+
+    (mail?'<a class="mail" href="mailto:'+esc(mail)+'">✉ Email</a>':'')+'</div>'+
+    (r.raison_sociale?'<a class="ghost" target="_blank" rel="noopener" href="https://www.google.com/search?q='+qenc+'">🌐 Rechercher sur internet</a>'+
+    '<a class="ghost" target="_blank" rel="noopener" href="https://www.google.com/search?q=site:linkedin.com/company+'+qenc+'">in Voir sur LinkedIn</a>':'');
+  document.getElementById('favb').onclick=()=>toggleFav(uid);
+  if(!keep)document.getElementById('sheet').classList.add('on');
+}
+document.getElementById('sheetbg').onclick=()=>document.getElementById('sheet').classList.remove('on');
+function renderFav(){
+  const list=Object.values(favs);
+  document.getElementById('favgrid').innerHTML=list.length?list.map((r,i)=>
+    '<article class="card" data-i="'+i+'"><div class="avatar">'+esc(initials(r.raison_sociale))+'</div>'+
+    '<div class="info"><h2>'+esc(r.raison_sociale||'(sans nom)')+'</h2>'+
+    '<div class="sub">'+esc([r.canton,r.commune].filter(Boolean).join(' · ')||'Suisse')+'</div></div>'+
+    '<div class="chev">›</div></article>').join(''):
+    '<div class="empty"><span class="big">⭐</span>Épinglez des entreprises avec ☆ dans leur fiche.</div>';
+  document.getElementById('favgrid').querySelectorAll('.card').forEach(c=>c.onclick=()=>{
+    lastResults=list;openDetail(+c.dataset.i);});
+}
+function renderTiles(){
+  document.getElementById('tiles').innerHTML=cantons.map(c=>
+    '<div class="tile" data-c="'+esc(c.canton)+'"><b>'+esc(c.canton)+'</b><span>'+Number(c.n).toLocaleString('fr-CH')+'</span><small>entreprises</small></div>').join('')||
+    '<div class="empty"><span class="big">🗺️</span>Aucune donnée cantonale.</div>';
+  document.getElementById('tiles').querySelectorAll('.tile').forEach(t=>t.onclick=()=>{
+    q.value=t.dataset.c;switchTab('v-search');render();});
 }
 async function renderApi(){
-  if(q.value.trim().length<2&&!activeSrc){emptyState();return;}
+  if(q.value.trim().length<2&&!activeSrc){
+    grid.innerHTML='<div class="empty"><span class="big">🏔️</span>Tapez au moins <b>2 lettres</b> pour explorer.</div>';st.textContent='';return;}
   st.textContent='Recherche…';
-  const p=new URLSearchParams({q:q.value,source:activeSrc,limit:200});
   try{
-    const r=await fetch('/api/search?'+p);const d=await r.json();
-    grid.innerHTML=cards(d.rows||[]);
-    st.textContent=(d.rows||[]).length+' résultat(s) · '+total.toLocaleString('fr-CH')+' entreprises en base';
+    const r=await fetch('/api/search?'+new URLSearchParams({q:q.value,source:activeSrc,limit:200}));
+    const d=await r.json();paintCards(d.rows||[]);
+    st.textContent=(d.rows||[]).length+' résultat(s) · '+total.toLocaleString('fr-CH')+' en base';
   }catch(e){st.textContent='API injoignable.';}
 }
 function renderLocal(){
   if(q.value.trim().length<2&&!activeSrc){
-    grid.innerHTML='<div class="empty"><span class="big">🏔️</span>Tapez au moins <b>2 lettres</b> pour explorer.</div>';
-    st.textContent=rows.length.toLocaleString('fr-CH')+' prospects (hors-ligne)';
-    return;
-  }
+    grid.innerHTML='<div class="empty"><span class="big">🏔️</span>Tapez au moins <b>2 lettres</b>.</div>';return;}
   const f=q.value.toLowerCase();
-  const list=rows.filter(r=>(!activeSrc||String(r.source||'').startsWith(activeSrc))&&JSON.stringify(r).toLowerCase().includes(f)).slice(0,200);
-  grid.innerHTML=cards(list);
-  st.textContent=list.length+' résultat(s) (hors-ligne)';
+  paintCards(rows.filter(r=>(!activeSrc||String(r.source||'').startsWith(activeSrc))&&JSON.stringify(r).toLowerCase().includes(f)).slice(0,200));
 }
 function render(){apiMode?renderApi():renderLocal();}
 function fillSources(names){
   chips.innerHTML='';
-  const all=document.createElement('button');all.className='chip on';all.textContent='Toutes';all.type='button';
-  all.onclick=()=>{activeSrc='';[...chips.children].forEach(c=>c.classList.remove('on'));all.classList.add('on');render();};
-  chips.appendChild(all);
-  names.forEach(s=>{const b=document.createElement('button');b.className='chip';b.textContent=s;b.type='button';
-    b.onclick=()=>{activeSrc=(activeSrc===s?'':s);[...chips.children].forEach(c=>c.classList.toggle('on',c.textContent===activeSrc||(!activeSrc&&c.textContent==='Toutes')));render();};
-    chips.appendChild(b);});
+  const mk=(label,val)=>{const b=document.createElement('button');b.className='chip'+(!val?' on':'');b.textContent=label;b.type='button';
+    b.onclick=()=>{activeSrc=val;[...chips.children].forEach(c=>c.classList.toggle('on',c===b));render();};chips.appendChild(b);};
+  mk('Toutes','');names.forEach(s=>mk(s,s));
 }
+function switchTab(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id===id));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===id));
+  if(id==='v-fav')renderFav();if(id==='v-cantons')renderTiles();
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>switchTab(b.dataset.v));
 async function boot(){
   try{
-    const r=await fetch('/api/stats');
-    if(!r.ok)throw 0;
-    const d=await r.json();
-    apiMode=true;total=d.total||0;
-    base.textContent=total.toLocaleString('fr-CH')+' entreprises · recherche instantanée';
+    const r=await fetch('/api/stats');if(!r.ok)throw 0;
+    const d=await r.json();apiMode=true;total=d.total||0;cantons=d.cantons||[];
+    base.textContent=total.toLocaleString('fr-CH')+' entreprises suisses';
     fillSources((d.sources||[]).map(s=>String(s.source).split(':')[0]));
-    emptyState();
+    document.getElementById('statusC').textContent=cantons.length+' cantons couverts';
+    grid.innerHTML='<div class="empty"><span class="big">🏔️</span>Tapez au moins <b>2 lettres</b> pour explorer.</div>';
   }catch(e){
     try{
       const r=await fetch('data/prospects.json');rows=await r.json();
       base.textContent=rows.length.toLocaleString('fr-CH')+' prospects (hors-ligne)';
       fillSources([...new Set(rows.map(r=>String(r.source||'').split(':')[0]).filter(Boolean))]);
-      grid.innerHTML='<div class="empty"><span class="big">🏔️</span>Tapez au moins <b>2 lettres</b> pour explorer.</div>';
-    }catch(e2){base.textContent='Aucune donnée — utilisez le sélecteur de fichier.';}
+    }catch(e2){base.textContent='Aucune donnée.';}
   }
+  saveFavs();
 }
 boot();
-let t;q.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(render,apiMode?300:120);});
-document.getElementById('go').addEventListener('click',render);
-q.addEventListener('keydown',e=>{if(e.key==='Enter')render();});
+let t;q.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(()=>{if(document.getElementById('v-search').classList.contains('on'))render();},apiMode?300:120);});
+document.getElementById('go').onclick=()=>{switchTab('v-search');render();};
+q.addEventListener('keydown',e=>{if(e.key==='Enter'){switchTab('v-search');render();}});
 document.getElementById('f').addEventListener('change',e=>{
   const rd=new FileReader();rd.onload=()=>{apiMode=false;rows=JSON.parse(rd.result);renderLocal();};rd.readAsText(e.target.files[0]);});
 </script>
