@@ -27,6 +27,8 @@ main{padding:.6rem 1rem calc(2rem + env(safe-area-inset-bottom));max-width:1100p
 .call{background:var(--teal);color:#fff}
 .mail{background:#e2e8f0;color:#1e293b}
 .nocontact{font-size:.8rem;color:var(--mut)}
+.weblinks{display:flex;gap:.5rem;margin-top:.5rem}
+.weblinks a{flex:1;text-align:center;text-decoration:none;font-size:.8rem;padding:.55rem .3rem;border-radius:.6rem;min-height:44px;display:flex;align-items:center;justify-content:center;border:1px solid #cbd5e1;color:#0f766e;background:#f8fafc}
 footer{padding:1rem;font-size:.75rem;color:var(--mut);text-align:center}
 /* Tablette / desktop : grille multi-colonnes */
 @media(min-width:700px){.grid{grid-template-columns:repeat(2,1fr)}}
@@ -56,11 +58,16 @@ function cards(list){
   return list.map(r=>{
     const metier=r.noga_label||r.noga||r.category||r.forme||'—';
     const btns=telLink(r.telephone)+mailLink(r.email);
+    const qenc=encodeURIComponent(((r.raison_sociale||'')+' '+(r.commune||'')).trim());
+    const web=r.raison_sociale?'<div class="weblinks">'+
+      '<a target="_blank" rel="noopener" href="https://www.google.com/search?q='+qenc+'">Rechercher sur internet</a>'+
+      '<a target="_blank" rel="noopener" href="https://www.google.com/search?q=site:linkedin.com/company+'+qenc+'">LinkedIn</a></div>':'';
     return '<article class="card"><h2>'+esc(r.raison_sociale||'(sans nom)')+'</h2>'+
     '<span class="badge">'+esc(metier)+'</span>'+
     '<span class="badge">'+esc(r.commune||'?')+'</span>'+
     (r.adresse?'<div class="loc">'+esc(r.adresse)+'</div>':'')+
     (btns?'<div class="actions">'+btns+'</div>':'<div class="nocontact">Pas de contact direct — voir fiche locale.</div>')+
+    web+
     '</article>';}).join('');
 }
 function renderLocal(){
