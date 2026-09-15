@@ -64,17 +64,27 @@ function cards(list){
     '</article>';}).join('');
 }
 function renderLocal(){
+  if(q.value.trim().length<2&&!src.value){
+    grid.innerHTML='';
+    st.textContent=rows.length.toLocaleString('fr-CH')+' prospects (mode hors-ligne) — tapez au moins 2 lettres pour rechercher.';
+    return;
+  }
   const f=q.value.toLowerCase(),s=src.value;
   const list=rows.filter(r=>(!s||String(r.source||'').startsWith(s))&&JSON.stringify(r).toLowerCase().includes(f)).slice(0,300);
   grid.innerHTML=cards(list);
   st.textContent=rows.length.toLocaleString('fr-CH')+' prospects (mode hors-ligne) — '+list.length+' affichés (max 300).';
 }
+function emptyState(){
+  grid.innerHTML='';
+  st.textContent=total.toLocaleString('fr-CH')+' entreprises en base — tapez au moins 2 lettres pour rechercher.';
+}
 async function renderApi(){
+  if(q.value.trim().length<2&&!src.value){emptyState();return;}
   const p=new URLSearchParams({q:q.value,source:src.value,limit:300});
   try{
     const r=await fetch('/api/search?'+p);const d=await r.json();
     grid.innerHTML=cards(d.rows||[]);
-    st.textContent=total.toLocaleString('fr-CH')+' entreprises en base — '+(d.rows||[]).length+' affichées.';
+    st.textContent=(d.rows||[]).length+' résultat(s) sur '+total.toLocaleString('fr-CH')+' entreprises.';
   }catch(e){st.textContent='API injoignable.';}
 }
 function render(){apiMode?renderApi():renderLocal();}
@@ -88,12 +98,12 @@ async function boot(){
     const d=await r.json();
     apiMode=true;total=d.total||0;
     fillSources((d.sources||[]).map(s=>String(s.source).split(':')[0]));
-    renderApi();
+    emptyState();
   }catch(e){
     try{
       const r=await fetch('data/prospects.json');rows=await r.json();
       fillSources([...new Set(rows.map(r=>String(r.source||'').split(':')[0]).filter(Boolean))]);
-      renderLocal();
+      st.textContent=rows.length.toLocaleString('fr-CH')+' prospects (mode hors-ligne) — tapez au moins 2 lettres pour rechercher.';
     }catch(e2){st.textContent='Aucune donnée — utilisez le sélecteur de fichier.';}
   }
 }

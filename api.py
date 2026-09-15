@@ -49,6 +49,11 @@ class H(BaseHTTPRequestHandler):
                 q, commune, source = g("q"), g("commune"), g("source")
                 lim = min(int(g("limit", "50") or 50), 200)
                 off = int(g("offset", "0") or 0)
+                if not q and not commune and not source:
+                    # pas de critère = pas de lignes (économise mémoire/réseau) ;
+                    # le total reste dispo via /api/stats
+                    total = qdb("SELECT COUNT(*) n FROM prospects")[0]["n"]
+                    return self.send({"rows": [], "total": total, "limit": lim, "offset": off})
                 where, args = [], []
                 if commune:
                     where.append("commune LIKE ?"); args.append(f"%{commune}%")
