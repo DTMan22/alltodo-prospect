@@ -36,6 +36,10 @@ nohup sudo docker exec alltodo-prospect python3 /app/scripts/bulk_zefix.py --db 
 sudo docker exec alltodo-prospect python3 /app/scripts/import_csv_generic.py --db /data/prospects.db --in /tmp/liste.csv --source business-monitor
 ```
 UID dédupliqués (raisons sociales fr/de/it), recherche plein-texte insensible aux accents.
+Champs par entreprise : raison sociale, **UID CHE**, **canton (code)**, commune, adresse,
+forme juridique + (rare dans l'open data) site web et but FR quand disponibles.
+Relance = enrichissement (UPSERT) des lignes existantes : pour forcer le backfill,
+supprimez le checkpoint (`rm /data/bulk_checkpoint.json`) avant de relancer.
 
 ## Démarrage rapide (sans Node, sans pip)
 

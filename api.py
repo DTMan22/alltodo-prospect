@@ -44,12 +44,17 @@ class H(BaseHTTPRequestHandler):
             if u.path == "/api/stats":
                 total = qdb("SELECT COUNT(*) n FROM prospects")[0]["n"]
                 src = qdb("SELECT source, COUNT(*) n FROM prospects GROUP BY source ORDER BY n DESC")
-                return self.send({"total": total, "sources": src})
+                cant = qdb("SELECT canton, COUNT(*) n FROM prospects WHERE canton<>'' GROUP BY canton ORDER BY n DESC")
+                return self.send({"total": total, "sources": src, "cantons": cant})
             if u.path == "/api/search":
                 q, commune, source = g("q"), g("commune"), g("source")
+                canton = g("canton").upper()
+                # raccourci : "VD" seul = filtre canton
+                if not canton and len(q.strip()) == 2 and q.strip().isalpha():
+                    canton, q = q.strip().upper(), ""
                 lim = min(int(g("limit", "50") or 50), 200)
                 off = int(g("offset", "0") or 0)
-                if not q and not commune and not source:
+                if not q and not commune and not source and not canton:
                     # pas de critère = pas de lignes (économise mémoire/réseau) ;
                     # le total reste dispo via /api/stats
                     total = qdb("SELECT COUNT(*) n FROM prospects")[0]["n"]
@@ -59,6 +64,8 @@ class H(BaseHTTPRequestHandler):
                     where.append("commune LIKE ?"); args.append(f"%{commune}%")
                 if source:
                     where.append("source LIKE ?"); args.append(f"{source}%")
+                if canton:
+                    where.append("canton = ?"); args.append(canton)
                 if q:
                     m = fts_query(q)
                     try:
@@ -73,7 +80,8 @@ class H(BaseHTTPRequestHandler):
                         where.append("(raison_sociale LIKE ? OR commune LIKE ?)")
                         args += [f"%{q}%", f"%{q}%"]
                 w = ("WHERE " + " AND ".join(where)) if where else ""
-                rows = qdb(f"SELECT uid,raison_sociale,forme,commune,adresse,source "
+                rows = qdb(f"SELECT uid,raison_sociale,forme,commune,adresse,source,"
+                           f"telephone,email,site_web,noga,canton,uid_che,description "
                            f"FROM prospects {w} ORDER BY raison_sociale LIMIT ? OFFSET ?",
                            tuple(args) + (lim, off))
                 return self.send({"rows": rows, "limit": lim, "offset": off})

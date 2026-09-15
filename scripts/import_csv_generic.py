@@ -16,7 +16,8 @@ FULL_SCHEMA = """
 CREATE TABLE IF NOT EXISTS prospects(
   uid TEXT PRIMARY KEY, raison_sociale TEXT, forme TEXT,
   commune TEXT, adresse TEXT, telephone TEXT, email TEXT,
-  site_web TEXT, noga TEXT, source TEXT DEFAULT 'import');
+  site_web TEXT, noga TEXT, source TEXT DEFAULT 'import',
+  canton TEXT, uid_che TEXT, description TEXT);
 CREATE VIRTUAL TABLE IF NOT EXISTS prospects_fts USING fts5(
   raison_sociale, commune, content='prospects',
   content_rowid='rowid', tokenize='unicode61 remove_diacritics 1');
@@ -24,7 +25,8 @@ CREATE TRIGGER IF NOT EXISTS trg_ai AFTER INSERT ON prospects BEGIN
   INSERT INTO prospects_fts(rowid, raison_sociale, commune)
   VALUES (new.rowid, new.raison_sociale, new.commune); END;
 """
-MIGRATE = ["telephone TEXT", "email TEXT", "site_web TEXT", "noga TEXT"]
+MIGRATE = ["telephone TEXT", "email TEXT", "site_web TEXT", "noga TEXT",
+           "canton TEXT", "uid_che TEXT", "description TEXT"]
 CANON = {
     "raisonsociale": "raison_sociale", "name": "raison_sociale", "title": "raison_sociale",
     "denomination": "raison_sociale", "company": "raison_sociale",

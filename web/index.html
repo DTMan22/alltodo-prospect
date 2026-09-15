@@ -90,13 +90,19 @@ function cards(list){
     const metier=r.noga_label||r.noga||r.category||r.forme||'Entreprise';
     const btns=telLink(r.telephone)+mailLink(r.email);
     const qenc=encodeURIComponent(((r.raison_sociale||'')+' '+(r.commune||'')).trim());
+    const meta=[];
+    if(r.canton)meta.push('<span class="tag b">'+esc(r.canton)+'</span>');
+    meta.push('<span class="tag b">'+esc(metier)+'</span>');
+    meta.push('<span class="tag g">📍 '+esc(r.commune||'?')+'</span>');
+    if(r.uid_che)meta.push('<span class="tag g">'+esc(r.uid_che)+'</span>');
+    const desc=r.description?'<div class="loc">'+esc(r.description.slice(0,220))+(r.description.length>220?'…':'')+'</div>':'';
+    const site=r.site_web?'<div class="loc">🌐 <a target="_blank" rel="noopener" href="'+esc(/^https?:/.test(r.site_web)?r.site_web:'https://'+r.site_web)+'">'+esc(r.site_web.replace(/^https?:\/\//,''))+'</a></div>':'';
     const web=r.raison_sociale?'<div class="weblinks">'+
       '<a target="_blank" rel="noopener" href="https://www.google.com/search?q='+qenc+'">🌐 Internet</a>'+
       '<a target="_blank" rel="noopener" href="https://www.google.com/search?q=site:linkedin.com/company+'+qenc+'">in LinkedIn</a></div>':'';
     return '<article class="card"><h2>'+esc(r.raison_sociale||'(sans nom)')+'</h2>'+
-    '<div class="tags"><span class="tag b">'+esc(metier)+'</span>'+
-    '<span class="tag g">📍 '+esc(r.commune||'?')+'</span></div>'+
-    (r.adresse?'<div class="loc">'+esc(r.adresse)+'</div>':'')+
+    '<div class="tags">'+meta.join('')+'</div>'+
+    (r.adresse?'<div class="loc">'+esc(r.adresse)+'</div>':'')+desc+site+
     (btns?'<div class="actions">'+btns+'</div>':'<div class="nocontact">Pas de contact direct — utilisez les liens ci-dessous.</div>')+
     web+'</article>';}).join('');
 }

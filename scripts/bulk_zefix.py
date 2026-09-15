@@ -13,25 +13,71 @@ Usage :
 import argparse, json, os, sqlite3, time, urllib.parse, urllib.request
 
 ENDPOINT = "https://lindas.admin.ch/query"
-PAGE = 5000
+PAGE = 8000  # bulk complet ≈ 4-6h sur VPS (reprise auto)
 
 QUERY_TPL = """
 PREFIX schema: <http://schema.org/>
 PREFIX admin: <https://schema.ld.admin.ch/>
-SELECT ?c ?name ?t ?muni ?street ?loc WHERE {{
+SELECT ?c ?name ?t ?muni ?street ?loc ?website ?desc ?che WHERE {{
   ?c a admin:ZefixOrganisation ; schema:name ?name ; admin:municipality ?mid .
   ?mid schema:name ?muni .
   ?c schema:additionalType ?tid . ?tid schema:name ?t .
   OPTIONAL {{ ?c schema:address ?a . ?a schema:streetAddress ?street ; schema:addressLocality ?loc . }}
+  OPTIONAL {{ ?c schema:url ?website . }}
+  OPTIONAL {{ ?c schema:description ?desc . FILTER(langMatches(lang(?desc), "fr")) }}
+  OPTIONAL {{ ?c schema:identifier ?idn . ?idn schema:name "CompanyUID" ; schema:value ?che . }}
   FILTER(STR(?c) > "{last}")
-}} ORDER BY ?c LIMIT {limit}
+}} ORDER BY ?c ?name LIMIT {limit}
 """
+
+CANTON_FR = ["Zurich", "Berne", "Lucerne", "Uri", "Schwyz", "Obwald", "Nidwald",
+    "Glaris", "Zoug", "Fribourg", "Soleure", "Bâle-Ville", "Bâle-Campagne",
+    "Schaffhouse", "Appenzell Rhodes-Extérieures", "Appenzell Rhodes-Intérieures",
+    "Saint-Gall", "Grisons", "Argovie", "Thurgovie", "Tessin", "Vaud",
+    "Valais", "Neuchâtel", "Genève", "Jura"]
+CANTON_CODE = {"Zurich": "ZH", "Berne": "BE", "Lucerne": "LU", "Uri": "UR",
+    "Schwyz": "SZ", "Obwald": "OW", "Nidwald": "NW", "Glaris": "GL", "Zoug": "ZG",
+    "Fribourg": "FR", "Soleure": "SO", "Bâle-Ville": "BS", "Bâle-Campagne": "BL",
+    "Schaffhouse": "SH", "Appenzell Rhodes-Extérieures": "AR",
+    "Appenzell Rhodes-Intérieures": "AI", "Saint-Gall": "SG", "Grisons": "GR",
+    "Argovie": "AG", "Thurgovie": "TG", "Tessin": "TI", "Vaud": "VD",
+    "Valais": "VS", "Neuchâtel": "NE", "Genève": "GE", "Jura": "JU"}
+
+def muni_canton_map(cache_path):
+    """{nom_commune: (canton_fr, code)} — cache local, fetch instantané sinon."""
+    if os.path.exists(cache_path):
+        return {k: tuple(v) for k, v in json.load(open(cache_path)).items()}
+    q = """PREFIX schema: <http://schema.org/>
+SELECT ?muni ?cant WHERE {
+  ?m a <https://schema.ld.admin.ch/Municipality> ; schema:name ?muni ;
+     schema:containedInPlace ?cp .
+  FILTER(CONTAINS(STR(?cp), '/canton/'))
+  ?cp schema:name ?cant .
+}"""
+    body = urllib.parse.urlencode({"query": q, "format": "application/sparql-results+json"}).encode()
+    req = urllib.request.Request(ENDPOINT, data=body, headers={
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/sparql-results+json", "User-Agent": "alltodo-prospect/0.1"})
+    with urllib.request.urlopen(req, timeout=180) as r:
+        rows = json.loads(r.read().decode())["results"]["bindings"]
+    by_muni = {}
+    for b in rows:
+        by_muni.setdefault(b["muni"]["value"], set()).add(b["cant"]["value"])
+    out = {}
+    for muni, cants in by_muni.items():
+        fr = next((c for c in cants if c in CANTON_FR), sorted(cants)[0])
+        out[muni] = (fr, CANTON_CODE.get(fr, ""))
+    os.makedirs(os.path.dirname(cache_path) or ".", exist_ok=True)
+    json.dump(out, open(cache_path, "w"), ensure_ascii=False)
+    print(f"carte communes→cantons : {len(out)} communes")
+    return out
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS prospects(
   uid TEXT PRIMARY KEY, raison_sociale TEXT, forme TEXT,
   commune TEXT, adresse TEXT, telephone TEXT, email TEXT,
-  site_web TEXT, noga TEXT, canton TEXT, source TEXT DEFAULT 'zefix');
+  site_web TEXT, noga TEXT, canton TEXT, uid_che TEXT, description TEXT,
+  source TEXT DEFAULT 'zefix');
 CREATE VIRTUAL TABLE IF NOT EXISTS prospects_fts USING fts5(
   raison_sociale, commune, content='prospects',
   content_rowid='rowid', tokenize='unicode61 remove_diacritics 1');
@@ -80,11 +126,23 @@ def main():
     con = sqlite3.connect(a.db)
     con.executescript(SCHEMA)
     cols = {r[1] for r in con.execute("PRAGMA table_info(prospects)")}
-    for col in ("telephone", "email", "site_web", "noga", "canton"):
+    for col in ("telephone", "email", "site_web", "noga", "canton", "uid_che", "description"):
         if col not in cols:
             con.execute(f"ALTER TABLE prospects ADD COLUMN {col} TEXT")
     seen = {r[0] for r in con.execute("SELECT uid FROM prospects")}
-    print(f"déjà en base : {len(seen)}")
+    needs = {r[0] for r in con.execute(
+        "SELECT uid FROM prospects WHERE uid_che IS NULL OR canton IS NULL")}
+    print(f"déjà en base : {len(seen)} (dont {len(needs)} à enrichir)")
+    mcmap = muni_canton_map(os.path.join(os.path.dirname(a.db) or ".", "muni_canton.json"))
+
+    UPSERT = """INSERT INTO prospects(uid,raison_sociale,forme,commune,adresse,
+        site_web,uid_che,description,canton,source)
+        VALUES(?,?,?,?,?,?,?,?,?,COALESCE((SELECT source FROM prospects WHERE uid=?),'zefix'))
+        ON CONFLICT(uid) DO UPDATE SET
+          site_web=COALESCE(NULLIF(excluded.site_web,''), prospects.site_web),
+          uid_che=COALESCE(NULLIF(excluded.uid_che,''), prospects.uid_che),
+          description=COALESCE(NULLIF(excluded.description,''), prospects.description),
+          canton=COALESCE(NULLIF(excluded.canton,''), prospects.canton)"""
 
     total_new, t0 = 0, time.time()
     while True:
@@ -95,21 +153,27 @@ def main():
         if not rows:
             break
         batch = []
+        n_new = 0
         for b in rows:
             g = lambda k: b.get(k, {}).get("value", "")
             uri = g("c")
             uid = uri.rsplit("/", 1)[-1]
             last = uri  # avance même si déjà vu (clé de pagination)
-            if uid in seen:
-                continue
-            seen.add(uid)
+            is_new = uid not in seen
+            if not is_new:
+                if uid not in needs:
+                    continue
+                needs.discard(uid)
+            else:
+                seen.add(uid)
+                n_new += 1
             addr = f"{g('street')}, {g('loc')}".strip(", ") if g("street") else g("loc")
-            batch.append((uid, g("name"), g("t"), g("muni"), addr))
-        con.executemany(
-            "INSERT OR IGNORE INTO prospects(uid,raison_sociale,forme,commune,adresse) VALUES(?,?,?,?,?)",
-            batch)
+            cant = mcmap.get(g("muni"), ("", ""))
+            batch.append((uid, g("name"), g("t"), g("muni"), addr,
+                          g("website"), g("che"), g("desc")[:2000], cant[1], uid))
+        con.executemany(UPSERT, batch)
         con.commit()
-        total_new += len(batch)
+        total_new += n_new
         read += len(rows)
         json.dump({"mode": "keyset", "last": last}, open(ckpt_path, "w"))
         el = time.time() - t0

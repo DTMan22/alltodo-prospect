@@ -6,7 +6,8 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS prospects(
   uid TEXT PRIMARY KEY, raison_sociale TEXT, forme TEXT,
   commune TEXT, adresse TEXT, telephone TEXT, email TEXT,
-  site_web TEXT, noga TEXT, canton TEXT, source TEXT DEFAULT 'legacy');
+  site_web TEXT, noga TEXT, canton TEXT, uid_che TEXT, description TEXT,
+  source TEXT DEFAULT 'legacy');
 CREATE VIRTUAL TABLE IF NOT EXISTS prospects_fts USING fts5(
   raison_sociale, commune, content='prospects',
   content_rowid='rowid', tokenize='unicode61 remove_diacritics 1');

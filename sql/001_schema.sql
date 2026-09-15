@@ -18,6 +18,9 @@ create table if not exists prospects (
   email text,
   site_web text,
   dirigeant_nom text,
+  canton text,                        -- code 2 lettres (VD, GE...) via table communes
+  uid_che text,                       -- CHE-xxx.xxx.xxx (CompanyUID LINDAS)
+  description text,                   -- but statutaire (fr si dispo)
   score_icp int default 0,             -- 0-100, calculé côté ingestion
   statut text default 'nouveau',       -- nouveau | contacte | interesse | inscrit | rejete
   created_at timestamptz default now()
