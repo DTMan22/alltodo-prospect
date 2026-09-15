@@ -3,100 +3,137 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0f766e">
-<title>alltodo-prospect — Prospection suisse</title>
+<meta name="theme-color" content="#0d9488">
+<title>alltodo-prospect — Toutes les entreprises suisses</title>
 <style>
-*{box-sizing:border-box}
-:root{--teal:#0f766e;--bg:#f4f6f5;--card:#fff;--txt:#1a1a1a;--mut:#64748b}
-body{font-family:system-ui,-apple-system,sans-serif;margin:0;background:var(--bg);color:var(--txt)}
-header{position:sticky;top:0;z-index:10;background:var(--teal);color:#fff;padding:.9rem 1rem calc(.9rem + env(safe-area-inset-top));padding-top:calc(.9rem + env(safe-area-inset-top))}
-header h1{font-size:1.1rem;margin:0 0 .6rem}
-header p{font-size:.75rem;margin:0 0 .6rem;opacity:.85}
-.searchrow{display:flex;gap:.5rem}
-.searchrow input,.searchrow select{flex:1;min-width:0;font-size:1rem;padding:.7rem;border:0;border-radius:.6rem}
-.searchrow select{flex:0 0 9rem}
-#status{font-size:.8rem;color:var(--mut);padding:.6rem 1rem 0}
-main{padding:.6rem 1rem calc(2rem + env(safe-area-inset-bottom));max-width:1100px;margin:0 auto}
-.grid{display:grid;gap:.7rem;grid-template-columns:1fr}
-.card{background:var(--card);border-radius:.8rem;padding:.9rem;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.card h2{font-size:1rem;margin:0 0 .25rem}
-.badge{display:inline-block;font-size:.7rem;background:#ccfbf1;color:#115e59;border-radius:99px;padding:.15rem .55rem;margin:.15rem .25rem .15rem 0}
-.loc{font-size:.85rem;color:var(--mut);margin:.2rem 0 .6rem}
-.actions{display:flex;gap:.5rem;margin-top:.5rem}
-.actions a{flex:1;text-align:center;text-decoration:none;font-size:.9rem;font-weight:600;padding:.65rem .4rem;border-radius:.6rem;min-height:44px;display:flex;align-items:center;justify-content:center}
-.call{background:var(--teal);color:#fff}
-.mail{background:#e2e8f0;color:#1e293b}
-.nocontact{font-size:.8rem;color:var(--mut)}
+*{box-sizing:border-box;margin:0}
+:root{
+  --brand:#0d9488;--brand-d:#0f766e;--bg:#f1f5f9;--card:#fff;--txt:#0f172a;--mut:#64748b;
+  --line:#e2e8f0;--chip:#e6fffa;--radius:1rem;
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 4px 16px rgba(15,23,42,.07);
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0b1220;--card:#111c30;--txt:#e2e8f0;--mut:#94a3b8;--line:#1e293b;
+    --chip:#134e4a;--shadow:0 4px 18px rgba(0,0,0,.35)}
+}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.hero{background:linear-gradient(135deg,#0d9488,#115e59 60%,#134e4a);color:#fff;
+  padding:calc(1.4rem + env(safe-area-inset-top)) 1.2rem 1.6rem;position:sticky;top:0;z-index:10;
+  border-radius:0 0 1.4rem 1.4rem;box-shadow:var(--shadow)}
+.hero h1{font-size:1.25rem;font-weight:800;letter-spacing:-.01em}
+.hero h1 span{opacity:.75;font-weight:400;font-size:.85rem}
+.hero p{font-size:.8rem;opacity:.85;margin:.3rem 0 .9rem}
+.search{display:flex;gap:.5rem;background:rgba(255,255,255,.95);border-radius:99px;padding:.35rem .35rem .35rem 1rem;box-shadow:var(--shadow)}
+.search input{flex:1;min-width:0;border:0;outline:0;font-size:1rem;background:transparent;color:#0f172a}
+.search button{border:0;border-radius:99px;background:var(--brand-d);color:#fff;font-weight:700;
+  padding:.7rem 1.2rem;font-size:.9rem;min-height:44px;cursor:pointer}
+.chips{display:flex;gap:.45rem;overflow-x:auto;padding:.7rem 1.2rem .1rem;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;font-size:.78rem;font-weight:600;border:1px solid var(--line);background:var(--card);
+  color:var(--txt);border-radius:99px;padding:.5rem .9rem;min-height:40px;cursor:pointer}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+#status{font-size:.8rem;color:var(--mut);padding:.7rem 1.2rem 0;max-width:1100px;margin:0 auto}
+main{padding:.7rem 1.2rem calc(2.5rem + env(safe-area-inset-bottom));max-width:1100px;margin:0 auto}
+.grid{display:grid;gap:.8rem;grid-template-columns:1fr}
+.card{background:var(--card);border-radius:var(--radius);padding:1rem 1rem .9rem;box-shadow:var(--shadow);
+  border:1px solid var(--line)}
+.card h2{font-size:1.02rem;font-weight:700;letter-spacing:-.01em}
+.tags{margin:.45rem 0 .1rem}
+.tag{display:inline-block;font-size:.7rem;font-weight:600;border-radius:99px;padding:.2rem .6rem;margin:0 .3rem .3rem 0}
+.tag.b{background:var(--chip);color:var(--brand-d)}
+@media(prefers-color-scheme:dark){.tag.b{color:#5eead4}}
+.tag.g{background:var(--bg);color:var(--mut);border:1px solid var(--line)}
+.loc{font-size:.84rem;color:var(--mut);margin:.15rem 0 .2rem}
+.actions{display:flex;gap:.5rem;margin-top:.7rem}
+.actions a{flex:1;text-align:center;text-decoration:none;font-size:.9rem;font-weight:700;padding:.7rem .4rem;
+  border-radius:.75rem;min-height:46px;display:flex;align-items:center;justify-content:center;gap:.3rem}
+.call{background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;box-shadow:0 2px 8px rgba(13,148,136,.35)}
+.mail{background:var(--bg);color:var(--txt);border:1px solid var(--line)}
+.nocontact{font-size:.8rem;color:var(--mut);margin-top:.6rem}
 .weblinks{display:flex;gap:.5rem;margin-top:.5rem}
-.weblinks a{flex:1;text-align:center;text-decoration:none;font-size:.8rem;padding:.55rem .3rem;border-radius:.6rem;min-height:44px;display:flex;align-items:center;justify-content:center;border:1px solid #cbd5e1;color:#0f766e;background:#f8fafc}
-footer{padding:1rem;font-size:.75rem;color:var(--mut);text-align:center}
-/* Tablette / desktop : grille multi-colonnes */
-@media(min-width:700px){.grid{grid-template-columns:repeat(2,1fr)}}
+.weblinks a{flex:1;text-align:center;text-decoration:none;font-size:.78rem;font-weight:600;padding:.6rem .3rem;
+  border-radius:.75rem;min-height:44px;display:flex;align-items:center;justify-content:center;
+  color:var(--brand-d);border:1px dashed var(--brand)}
+@media(prefers-color-scheme:dark){.weblinks a{color:#5eead4}}
+.empty{text-align:center;color:var(--mut);padding:3rem 1rem;font-size:.9rem}
+.empty .big{font-size:2.2rem;display:block;margin-bottom:.5rem}
+footer{text-align:center;font-size:.72rem;color:var(--mut);padding:0 1rem 2rem}
+footer input{margin-top:.4rem}
+@media(min-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:1.5rem}}
 @media(min-width:1050px){.grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
-<header>
-  <h1>alltodo-prospect</h1>
-  <p>Données publiques B2B — usage ciblé uniquement, opt-out systématique (nLPD/LCD).</p>
-  <div class="searchrow">
-    <input id="q" type="search" placeholder="Nom, commune, métier…" autocomplete="off">
-    <select id="src"><option value="">Sources</option></select>
+<header class="hero">
+  <h1>alltodo-prospect <span>· Suisse</span></h1>
+  <p id="baseline">Chargement…</p>
+  <div class="search">
+    <input id="q" type="search" placeholder="Nom, métier, commune…" autocomplete="off" aria-label="Rechercher">
+    <button id="go" type="button">OK</button>
   </div>
 </header>
-<p id="status">Chargement…</p>
+<div class="chips" id="chips"></div>
+<p id="status"></p>
 <main><div class="grid" id="grid"></div></main>
 <footer>Charger un autre JSON : <input type="file" id="f" accept=".json"></footer>
 <script>
-let rows=[], apiMode=false, total=0;
+let rows=[], apiMode=false, total=0, activeSrc='';
 const grid=document.getElementById('grid'),st=document.getElementById('status'),
-      q=document.getElementById('q'),src=document.getElementById('src');
+      base=document.getElementById('baseline'),q=document.getElementById('q'),
+      chips=document.getElementById('chips');
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function telLink(t){const c=String(t||'').split(';')[0].trim().replace(/[\s.]/g,'');return c?'<a class="call" href="tel:'+esc(c)+'">Appeler</a>':'';}
-function mailLink(m){const e=String(m||'').split(';')[0].trim();return e?'<a class="mail" href="mailto:'+esc(e)+'">Email</a>':'';}
+function telLink(t){const c=String(t||'').split(';')[0].trim().replace(/[\s.]/g,'');return c?'<a class="call" href="tel:'+esc(c)+'">✆ Appeler</a>':'';}
+function mailLink(m){const e=String(m||'').split(';')[0].trim();return e?'<a class="mail" href="mailto:'+esc(e)+'">✉ Email</a>':'';}
 function cards(list){
+  if(!list.length)return '<div class="empty"><span class="big">🔍</span>Aucun résultat — essayez un autre mot-clé.</div>';
   return list.map(r=>{
-    const metier=r.noga_label||r.noga||r.category||r.forme||'—';
+    const metier=r.noga_label||r.noga||r.category||r.forme||'Entreprise';
     const btns=telLink(r.telephone)+mailLink(r.email);
     const qenc=encodeURIComponent(((r.raison_sociale||'')+' '+(r.commune||'')).trim());
     const web=r.raison_sociale?'<div class="weblinks">'+
-      '<a target="_blank" rel="noopener" href="https://www.google.com/search?q='+qenc+'">Rechercher sur internet</a>'+
-      '<a target="_blank" rel="noopener" href="https://www.google.com/search?q=site:linkedin.com/company+'+qenc+'">LinkedIn</a></div>':'';
+      '<a target="_blank" rel="noopener" href="https://www.google.com/search?q='+qenc+'">🌐 Internet</a>'+
+      '<a target="_blank" rel="noopener" href="https://www.google.com/search?q=site:linkedin.com/company+'+qenc+'">in LinkedIn</a></div>':'';
     return '<article class="card"><h2>'+esc(r.raison_sociale||'(sans nom)')+'</h2>'+
-    '<span class="badge">'+esc(metier)+'</span>'+
-    '<span class="badge">'+esc(r.commune||'?')+'</span>'+
+    '<div class="tags"><span class="tag b">'+esc(metier)+'</span>'+
+    '<span class="tag g">📍 '+esc(r.commune||'?')+'</span></div>'+
     (r.adresse?'<div class="loc">'+esc(r.adresse)+'</div>':'')+
-    (btns?'<div class="actions">'+btns+'</div>':'<div class="nocontact">Pas de contact direct — voir fiche locale.</div>')+
-    web+
-    '</article>';}).join('');
-}
-function renderLocal(){
-  if(q.value.trim().length<2&&!src.value){
-    grid.innerHTML='';
-    st.textContent=rows.length.toLocaleString('fr-CH')+' prospects (mode hors-ligne) — tapez au moins 2 lettres pour rechercher.';
-    return;
-  }
-  const f=q.value.toLowerCase(),s=src.value;
-  const list=rows.filter(r=>(!s||String(r.source||'').startsWith(s))&&JSON.stringify(r).toLowerCase().includes(f)).slice(0,300);
-  grid.innerHTML=cards(list);
-  st.textContent=rows.length.toLocaleString('fr-CH')+' prospects (mode hors-ligne) — '+list.length+' affichés (max 300).';
+    (btns?'<div class="actions">'+btns+'</div>':'<div class="nocontact">Pas de contact direct — utilisez les liens ci-dessous.</div>')+
+    web+'</article>';}).join('');
 }
 function emptyState(){
-  grid.innerHTML='';
-  st.textContent=total.toLocaleString('fr-CH')+' entreprises en base — tapez au moins 2 lettres pour rechercher.';
+  grid.innerHTML='<div class="empty"><span class="big">🏔️</span>Tapez au moins <b>2 lettres</b> pour explorer les entreprises suisses.</div>';
+  st.textContent='';
 }
 async function renderApi(){
-  if(q.value.trim().length<2&&!src.value){emptyState();return;}
-  const p=new URLSearchParams({q:q.value,source:src.value,limit:300});
+  if(q.value.trim().length<2&&!activeSrc){emptyState();return;}
+  st.textContent='Recherche…';
+  const p=new URLSearchParams({q:q.value,source:activeSrc,limit:200});
   try{
     const r=await fetch('/api/search?'+p);const d=await r.json();
     grid.innerHTML=cards(d.rows||[]);
-    st.textContent=(d.rows||[]).length+' résultat(s) sur '+total.toLocaleString('fr-CH')+' entreprises.';
+    st.textContent=(d.rows||[]).length+' résultat(s) · '+total.toLocaleString('fr-CH')+' entreprises en base';
   }catch(e){st.textContent='API injoignable.';}
+}
+function renderLocal(){
+  if(q.value.trim().length<2&&!activeSrc){
+    grid.innerHTML='<div class="empty"><span class="big">🏔️</span>Tapez au moins <b>2 lettres</b> pour explorer.</div>';
+    st.textContent=rows.length.toLocaleString('fr-CH')+' prospects (hors-ligne)';
+    return;
+  }
+  const f=q.value.toLowerCase();
+  const list=rows.filter(r=>(!activeSrc||String(r.source||'').startsWith(activeSrc))&&JSON.stringify(r).toLowerCase().includes(f)).slice(0,200);
+  grid.innerHTML=cards(list);
+  st.textContent=list.length+' résultat(s) (hors-ligne)';
 }
 function render(){apiMode?renderApi():renderLocal();}
 function fillSources(names){
-  names.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;src.appendChild(o);});
+  chips.innerHTML='';
+  const all=document.createElement('button');all.className='chip on';all.textContent='Toutes';all.type='button';
+  all.onclick=()=>{activeSrc='';[...chips.children].forEach(c=>c.classList.remove('on'));all.classList.add('on');render();};
+  chips.appendChild(all);
+  names.forEach(s=>{const b=document.createElement('button');b.className='chip';b.textContent=s;b.type='button';
+    b.onclick=()=>{activeSrc=(activeSrc===s?'':s);[...chips.children].forEach(c=>c.classList.toggle('on',c.textContent===activeSrc||(!activeSrc&&c.textContent==='Toutes')));render();};
+    chips.appendChild(b);});
 }
 async function boot(){
   try{
@@ -104,19 +141,22 @@ async function boot(){
     if(!r.ok)throw 0;
     const d=await r.json();
     apiMode=true;total=d.total||0;
+    base.textContent=total.toLocaleString('fr-CH')+' entreprises · recherche instantanée';
     fillSources((d.sources||[]).map(s=>String(s.source).split(':')[0]));
     emptyState();
   }catch(e){
     try{
       const r=await fetch('data/prospects.json');rows=await r.json();
+      base.textContent=rows.length.toLocaleString('fr-CH')+' prospects (hors-ligne)';
       fillSources([...new Set(rows.map(r=>String(r.source||'').split(':')[0]).filter(Boolean))]);
-      st.textContent=rows.length.toLocaleString('fr-CH')+' prospects (mode hors-ligne) — tapez au moins 2 lettres pour rechercher.';
-    }catch(e2){st.textContent='Aucune donnée — utilisez le sélecteur de fichier.';}
+      grid.innerHTML='<div class="empty"><span class="big">🏔️</span>Tapez au moins <b>2 lettres</b> pour explorer.</div>';
+    }catch(e2){base.textContent='Aucune donnée — utilisez le sélecteur de fichier.';}
   }
 }
 boot();
 let t;q.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(render,apiMode?300:120);});
-src.addEventListener('change',render);
+document.getElementById('go').addEventListener('click',render);
+q.addEventListener('keydown',e=>{if(e.key==='Enter')render();});
 document.getElementById('f').addEventListener('change',e=>{
   const rd=new FileReader();rd.onload=()=>{apiMode=false;rows=JSON.parse(rd.result);renderLocal();};rd.readAsText(e.target.files[0]);});
 </script>
