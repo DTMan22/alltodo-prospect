@@ -25,6 +25,7 @@ echo "== 2/3 (re)lance conteneur sur le réseau Traefik =="
 docker rm -f "$CONTAINER" 2>/dev/null || true
 docker run -d --name "$CONTAINER" --restart unless-stopped \
   --network "$NETWORK" \
+  -v alltodo-prospect-data:/data \
   -p 127.0.0.1:8093:80 \
   --label traefik.enable=true \
   --label "traefik.http.routers.avocix.rule=Host(\`$DOMAIN\`)" \

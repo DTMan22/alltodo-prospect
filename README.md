@@ -24,6 +24,19 @@ alltodo-prospect/
 └── .env.example
 ```
 
+## Bulk Zefix complet (~793k entités, ~3-5h, reprise auto sur panne)
+
+```bash
+# SUR LE SERVEUR (le conteneur doit tourner avec le volume /data) :
+sudo docker exec alltodo-prospect python3 /app/scripts/bulk_zefix.py --db /data/prospects.db
+# En arrière-plan :
+nohup sudo docker exec alltodo-prospect python3 /app/scripts/bulk_zefix.py --db /data/prospects.db > bulk.log 2>&1 &
+# Suivi : tail -f bulk.log
+# Import d'un fichier d'adresses acheté (business-monitor.ch sauvé en CSV) :
+sudo docker exec alltodo-prospect python3 /app/scripts/import_csv_generic.py --db /data/prospects.db --in /tmp/liste.csv --source business-monitor
+```
+UID dédupliqués (raisons sociales fr/de/it), recherche plein-texte insensible aux accents.
+
 ## Démarrage rapide (sans Node, sans pip)
 
 ```bash

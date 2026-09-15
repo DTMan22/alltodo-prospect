@@ -46,37 +46,62 @@ footer{padding:1rem;font-size:.75rem;color:var(--mut);text-align:center}
 <main><div class="grid" id="grid"></div></main>
 <footer>Charger un autre JSON : <input type="file" id="f" accept=".json"></footer>
 <script>
-let rows=[];
+let rows=[], apiMode=false, total=0;
 const grid=document.getElementById('grid'),st=document.getElementById('status'),
       q=document.getElementById('q'),src=document.getElementById('src');
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function telLink(t){const c=String(t||'').split(';')[0].trim().replace(/[\s.]/g,'');return c?'<a class="call" href="tel:'+esc(c)+'">Appeler</a>':'';}
 function mailLink(m){const e=String(m||'').split(';')[0].trim();return e?'<a class="mail" href="mailto:'+esc(e)+'">Email</a>':'';}
-function render(){
-  const f=q.value.toLowerCase(),s=src.value;
-  const list=rows.filter(r=>(!s||String(r.source||'').startsWith(s))&&JSON.stringify(r).toLowerCase().includes(f)).slice(0,300);
-  grid.innerHTML=list.map(r=>{
+function cards(list){
+  return list.map(r=>{
+    const metier=r.noga_label||r.noga||r.category||r.forme||'—';
     const btns=telLink(r.telephone)+mailLink(r.email);
     return '<article class="card"><h2>'+esc(r.raison_sociale||'(sans nom)')+'</h2>'+
-    '<span class="badge">'+esc(r.noga_label||r.category||'—')+'</span>'+
+    '<span class="badge">'+esc(metier)+'</span>'+
     '<span class="badge">'+esc(r.commune||'?')+'</span>'+
     (r.adresse?'<div class="loc">'+esc(r.adresse)+'</div>':'')+
     (btns?'<div class="actions">'+btns+'</div>':'<div class="nocontact">Pas de contact direct — voir fiche locale.</div>')+
     '</article>';}).join('');
-  st.textContent=rows.length.toLocaleString('fr-CH')+' prospects — '+list.length+' affichés (max 300).';
 }
-function init(data){
-  rows=data;
-  [...new Set(rows.map(r=>String(r.source||'').split(':')[0]).filter(Boolean))].forEach(s=>{
-    const o=document.createElement('option');o.value=s;o.textContent=s;src.appendChild(o);});
-  render();
+function renderLocal(){
+  const f=q.value.toLowerCase(),s=src.value;
+  const list=rows.filter(r=>(!s||String(r.source||'').startsWith(s))&&JSON.stringify(r).toLowerCase().includes(f)).slice(0,300);
+  grid.innerHTML=cards(list);
+  st.textContent=rows.length.toLocaleString('fr-CH')+' prospects (mode hors-ligne) — '+list.length+' affichés (max 300).';
 }
-fetch('data/prospects.json').then(r=>{if(!r.ok)throw 0;return r.json();}).then(init)
-  .catch(()=>{st.textContent='Aucune donnée embarquée — utilisez le sélecteur de fichier.';});
-let t;q.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(render,120);});
+async function renderApi(){
+  const p=new URLSearchParams({q:q.value,source:src.value,limit:300});
+  try{
+    const r=await fetch('/api/search?'+p);const d=await r.json();
+    grid.innerHTML=cards(d.rows||[]);
+    st.textContent=total.toLocaleString('fr-CH')+' entreprises en base — '+(d.rows||[]).length+' affichées.';
+  }catch(e){st.textContent='API injoignable.';}
+}
+function render(){apiMode?renderApi():renderLocal();}
+function fillSources(names){
+  names.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;src.appendChild(o);});
+}
+async function boot(){
+  try{
+    const r=await fetch('/api/stats');
+    if(!r.ok)throw 0;
+    const d=await r.json();
+    apiMode=true;total=d.total||0;
+    fillSources((d.sources||[]).map(s=>String(s.source).split(':')[0]));
+    renderApi();
+  }catch(e){
+    try{
+      const r=await fetch('data/prospects.json');rows=await r.json();
+      fillSources([...new Set(rows.map(r=>String(r.source||'').split(':')[0]).filter(Boolean))]);
+      renderLocal();
+    }catch(e2){st.textContent='Aucune donnée — utilisez le sélecteur de fichier.';}
+  }
+}
+boot();
+let t;q.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(render,apiMode?300:120);});
 src.addEventListener('change',render);
 document.getElementById('f').addEventListener('change',e=>{
-  const rd=new FileReader();rd.onload=()=>init(JSON.parse(rd.result));rd.readAsText(e.target.files[0]);});
+  const rd=new FileReader();rd.onload=()=>{apiMode=false;rows=JSON.parse(rd.result);renderLocal();};rd.readAsText(e.target.files[0]);});
 </script>
 </body>
 </html>
